@@ -2,15 +2,23 @@ namespace OneClickScreenShot;
 
 static class Program
 {
-    /// <summary>
-    ///  The main entry point for the application.
-    /// </summary>
+    private const string MutexName = "OneClickScreenShot_SingleInstance";
+
     [STAThread]
     static void Main()
     {
-        // To customize application configuration such as set high DPI settings or default font,
-        // see https://aka.ms/applicationconfiguration.
+        using var mutex = new System.Threading.Mutex(true, MutexName, out bool createdNew);
+        if (!createdNew)
+        {
+            MessageBox.Show(
+                "OneClickScreenShot is already running.\nCheck the system tray.",
+                "Already Running",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Information);
+            return;
+        }
+
         ApplicationConfiguration.Initialize();
-        Application.Run(new Form1());
-    }    
+        Application.Run(new MainForm());
+    }
 }
